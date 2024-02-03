@@ -2,20 +2,25 @@
 // http://localhost:3000/counter
 
 import * as React from 'react'
-// 🐨 add `screen` to the import here:
-import {render, fireEvent} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Counter from '../../components/counter'
 
-test('counter increments and decrements when the buttons are clicked', () => {
-  const {container} = render(<Counter />)
-  // 🐨 replace these with screen queries
-  // 💰 you can use `getByText` for each of these (`getByRole` can work for the button too)
-  const [decrement, increment] = container.querySelectorAll('button')
-  const message = container.firstChild.querySelector('div')
+/* 
+  the difference between fireEvent and userEvent is that userEvent is more like a real user interaction
+  the fireEvent is more like a programmatic interaction
+  for example: the fireEvent.click() will not trigger the onMouseDown and onMouseUp events, but the fireEvent will trigger them along the click event, because this imitates the real user interaction.
+  */
+
+test('counter increments and decrements when the buttons are clicked', async () => {
+  render(<Counter />)
+  const increment = screen.getByRole('button', {name: /increment/i})
+  const decrement = screen.getByRole('button', {name: /decrement/i})
+  const message = screen.getByText(/current count/i)
 
   expect(message).toHaveTextContent('Current count: 0')
-  fireEvent.click(increment)
-  expect(message).toHaveTextContent('Current count: 1')
-  fireEvent.click(decrement)
-  expect(message).toHaveTextContent('Current count: 0')
+  userEvent.click(increment)
+  await waitFor(() => expect(message).toHaveTextContent('Current count: 1'))
+  userEvent.click(decrement)
+  await waitFor(() => expect(message).toHaveTextContent('Current count: 0'))
 })
