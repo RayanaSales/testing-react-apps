@@ -2,19 +2,16 @@
 // http://localhost:3000/easy-button
 
 import * as React from 'react'
-import {render, screen} from '@testing-library/react'
-import {ThemeProvider} from '../../components/theme'
+import {render, screen} from 'test/test-utils'
+/** nao precisamos importar aqui usando o ../ porque 
+ * o arquivo de testes ja esta configurado para importar
+ * de src/test/test-utils.js
+ * essa configuracao foi feita no arquivo de configuracao: jest.config.js
+ */
 import EasyButton from '../../components/easy-button'
 
-function renderWithTheme(ui, {theme = 'light', ...options} = {}) {
-  const wrapper = ({children}) => (
-    <ThemeProvider initialTheme={theme}>{children}</ThemeProvider>
-  )
-  return render(ui, {wrapper: wrapper, ...options})
-}
-
 test('renders with the light styles for the light theme', () => {
-  renderWithTheme(<EasyButton>Easy</EasyButton>)
+  render(<EasyButton>Easy</EasyButton>)
 
   const button = screen.getByRole('button', {name: /easy/i})
   expect(button).toHaveStyle(`
@@ -24,7 +21,7 @@ test('renders with the light styles for the light theme', () => {
 })
 
 test('renders with the dark styles for the dark theme', () => {
-  renderWithTheme(<EasyButton>Easy</EasyButton>, {theme: 'dark'})
+  render(<EasyButton>Easy</EasyButton>, {theme: 'dark'})
 
   const button = screen.getByRole('button', {name: /easy/i})
   expect(button).toHaveStyle(`
