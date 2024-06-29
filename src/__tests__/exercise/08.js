@@ -2,21 +2,28 @@
 // http://localhost:3000/counter-hook
 
 import * as React from 'react'
-import {render, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {render, act} from '@testing-library/react'
 import useCounter from '../../components/use-counter'
 
-// 🐨 create a simple function component that uses the useCounter hook
-// and then exposes some UI that our test can interact with to test the
-// capabilities of this hook
-// 💰 here's how to use the hook:
-// const {count, increment, decrement} = useCounter()
+test('exposes the count and increment/decrement functions', async () => {
+  let result
+  function TestComponent() {
+    result = useCounter()
+    return null
+  }
 
-test('exposes the count and increment/decrement functions', () => {
-  // 🐨 render the component
-  // 🐨 get the elements you need using screen
-  // 🐨 assert on the initial state of the hook
-  // 🐨 interact with the UI using userEvent and assert on the changes in the UI
+  render(<TestComponent />)
+  expect(result.count).toBe(0)
+  act(() => result.increment())
+  expect(result.count).toBe(1)
+  act(() => result.decrement())
+  expect(result.count).toBe(0)
+  // console.log(result);
+
+  /**
+   * [KCD] The act function is telling react: "hey im gonna do some stuff that might cause some updates, and after my callback its all finished I want you to flush all side effects from react. My component its stable".
+   *
+   * This was not needed before, because we were using user events, which wrapps everything in act calls. But it's now necessary because we are calling the increment and decrement functions directly - and because of that you have to manually wrap it with act function.
+   *
+   */
 })
-
-/* eslint no-unused-vars:0 */
